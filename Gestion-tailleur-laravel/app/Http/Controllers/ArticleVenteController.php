@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateArticleVenteRequest;
 use App\Http\Resources\ArticleVenteCollection;
 use App\Http\Resources\ArticleVenteRessource;
 use App\Models\ArticleVente;
+use App\Models\VenteConfection;
 use Illuminate\Support\Facades\DB;
 
 class ArticleVenteController extends Controller
@@ -63,7 +64,23 @@ class ArticleVenteController extends Controller
      */
     public function update(UpdateArticleVenteRequest $request, ArticleVente $articleVente)
     {
-        $articleVente->update($request->all());
+        DB::transaction(function() use($request, $articleVente){
+            $articleVente->update([
+                'libelle' => $request->libelle,
+                'categorie_id' => $request->categorie_id,
+                'promotion' => $request->promotion,
+                'ref' => $request->ref,
+                'marge' => $request->marge,
+                'prix_de_vente' => $request->prix_de_vente,
+                'cout_fabrication' => $request->cout_fabrication,
+                'image' => $request->image,
+            ]);
+            $articleVente->vente_confection()->sync([
+                'article_id' => $request->article_id,
+            ]);
+
+        });
+
         return new ArticleVenteRessource($articleVente);
     }
 
@@ -74,7 +91,7 @@ class ArticleVenteController extends Controller
     {
         $articleVente->delete();
         return response()->json([
-            'message' => 'ArticleVente deleted'
-        ], 204);
+            'message' => 'ArticleVente supprime avec succes'
+        ]);
     }
 }

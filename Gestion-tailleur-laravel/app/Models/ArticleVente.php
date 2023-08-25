@@ -25,9 +25,16 @@ class ArticleVente extends Model
     {
         return $this->belongsTo(Categorie::class);
     }
+    public function vente_confection(){
+        return $this->belongsToMany(VenteConfection::class, 'vente_confections', 'article_vente_id', 'article_id');
+    }
     protected static function booted()
     {
-        static::creating(function ($article) {
+        static::created(function ($article) {
+            $article->vente_confection()->sync([
+                'article_vente_id' => $article->id,
+                'article_id' => request()->article_id,
+            ]);
         });
     }
 }
