@@ -1,0 +1,46 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Article</th>
+      <th scope="col">Prix</th>
+      <th scope="col">Stock</th>
+      <th scope="col">Catégories</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngIf="isLoading; else articlesContent">
+      <tr *ngFor="let _ of articlesList">
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+      </tr>
+    </ng-container>
+    <ng-template #articlesContent>
+      <tr *ngFor="let article of paginatedArticles.reverse()">
+        <td>{{ article.libelle }}</td>
+        <td>{{ article.prix }}</td>
+        <td>{{ article.stock }}</td>
+        <td>{{ article.categorie }}</td>
+        <td>
+          <input type="hidden" [value]="article.id" />
+          <button class="btn btn-warning" (click)="getArticle(article.id)">Modifier</button>
+          <button
+            class="btn btn-danger"
+            style="margin-left: 20px"
+            (click)="toggleButtonText(article.id)"
+          >
+            {{ buttonTextStates[article.id] || "Supprimer" }}
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</table>
+<div class="pagination" style="margin-left: 30%;">
+  <button class="btn" [disabled]="currentPage === 1" (click)="changePage(-1)">Précédent</button>
+  <button class="btn">{{ currentPage }}</button>
+  <button class="btn" [disabled]="currentPage === totalPages" (click)="changePage(1)">Suivant</button>
+</div>

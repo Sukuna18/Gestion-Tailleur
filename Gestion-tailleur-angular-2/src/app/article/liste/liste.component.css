@@ -1,0 +1,20 @@
+/* Styles pour le skeleton loader */
+.skeleton {
+    background-color: #f0f0f0; /* Couleur de fond gris clair */
+    animation: skeleton-loading 1s infinite alternate; /* Animation de clignotement */
+    width: 100%;
+    height: 1em;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+  
+  /* Animation de clignotement */
+  @keyframes skeleton-loading {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+    }
+  }
+  
