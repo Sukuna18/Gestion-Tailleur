@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('article_ventes', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
+            $table->string('libelle')->unique();
             $table->foreignIdFor(\App\Models\Categorie::class)->constrained()->cascadeOnDelete();
             $table->integer('promotion')->nullable();
             $table->string('ref');
             $table->integer('marge');
             $table->integer('prix_de_vente');
             $table->integer('cout_fabrication');
-            $table->string('image')->nullable();
+            $table->longText('image')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -6,12 +6,12 @@ export interface Vente extends RestResponse<Vente>{
     ref: string;
     cout_fabrication: number;
     prix_de_vente: number;
-    image: string;
+    image: string|ArrayBuffer|null|undefined;
     marge: number;
     promoCheck: boolean;
     promotion: number;
     confection: Article[];
     article_id: number;
-    articleConfection: string;
+    articleConfection: void;
     links:Object;
 }

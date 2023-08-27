@@ -18,7 +18,7 @@ export class LoadImageService {
       reader.onload = (e: ProgressEvent<FileReader>): void => {
       imagePreview = e.target?.result;
       this.thumbnail = imagePreview;
-        console.log(imagePreview);
+        console.log(this.thumbnail);
         console.log(selectedImage);
       };
       reader.readAsDataURL(selectedImage);
