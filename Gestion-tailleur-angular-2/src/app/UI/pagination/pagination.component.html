@@ -1,0 +1,6 @@
+<div class="pagination" style="margin-left: 30%;">
+    <button class="btn" [disabled]="currentPage === 1" (click)="changePage(-1)">Précédent</button>
+    <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="goToPage($event)"></app-pagination>
+    <button class="btn" [disabled]="currentPage === totalPages" (click)="changePage(1)">Suivant</button>
+  </div>
+  

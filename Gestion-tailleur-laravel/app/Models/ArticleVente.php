@@ -31,10 +31,7 @@ class ArticleVente extends Model
     protected static function booted()
     {
         static::created(function ($article) {
-            $article->vente_confection()->sync([
-                'article_vente_id' => $article->id,
-                'article_id' => request()->article_id,
-            ]);
+            $article->vente_confection()->attach(request()->article_id);
         });
     }
 }

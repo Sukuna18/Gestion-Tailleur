@@ -12,6 +12,10 @@ import { CategorieService } from './Service/categorie.service';
 import { FormComponent } from './article/form/form.component';
 import { ListeComponent } from './article/liste/liste.component';
 import { ItemsComponent } from './article/liste/items/items.component';
+import { ArticleVenteComponent } from './article-vente/article-vente.component';
+import { FormulaireComponent } from './article-vente/formulaire/formulaire.component';
+import { ListeVenteComponent } from './article-vente/liste-vente/liste-vente.component';
+import { PaginationComponent } from './UI/pagination/pagination.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +25,11 @@ import { ItemsComponent } from './article/liste/items/items.component';
     ArticleComponent,
     FormComponent,
     ListeComponent,
-    ItemsComponent
+    ItemsComponent,
+    ArticleVenteComponent,
+    FormulaireComponent,
+    ListeVenteComponent,
+    PaginationComponent,
   ],
   imports: [
     BrowserModule,

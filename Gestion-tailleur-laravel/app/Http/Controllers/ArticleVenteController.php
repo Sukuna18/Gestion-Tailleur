@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreArticleVenteRequest;
 use App\Http\Requests\UpdateArticleVenteRequest;
-use App\Http\Resources\ArticleVenteCollection;
+use App\Http\Resources\ArticleRessource;
 use App\Http\Resources\ArticleVenteRessource;
+use App\Http\Resources\CategorieRessource;
+use App\Models\Article;
 use App\Models\ArticleVente;
+use App\Models\Categorie;
 use App\Models\VenteConfection;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +21,13 @@ class ArticleVenteController extends Controller
     public function index()
     {
         $all = ArticleVente::paginate(5);
-        return ArticleVenteRessource::collection($all);
+        $categorieVente = Categorie::where('type', 'vente')->get();
+        $confection = Article::all();
+        return response()->json([
+            'articles' => ArticleVenteRessource::collection($all),
+            'categories' => CategorieRessource::collection($categorieVente),
+            'confection' => ArticleRessource::collection($confection)
+        ]);
     }
 
     /**
@@ -75,9 +84,7 @@ class ArticleVenteController extends Controller
                 'cout_fabrication' => $request->cout_fabrication,
                 'image' => $request->image,
             ]);
-            $articleVente->vente_confection()->sync([
-                'article_id' => $request->article_id,
-            ]);
+            $articleVente->vente_confection()->sync($request->article_id);
 
         });
 

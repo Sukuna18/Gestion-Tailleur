@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(\App\Models\ArticleVente::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Article::class)->constrained()->cascadeOnDelete();
-            $table->integer('quantite');
+            $table->integer('quantite')->default(0);
             $table->timestamps();
         });
     }

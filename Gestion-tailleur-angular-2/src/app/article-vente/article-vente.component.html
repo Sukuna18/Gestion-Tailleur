@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .custom-card {
+        max-width: 1024px;
+        margin: 0 auto;
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card custom-card">
+            <div class="card-body">
+              <app-formulaire [allData]="allData" (addArticleEvent)="addArticleVente($event)"></app-formulaire>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Article</th>
+                    <th scope="col">Prix</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Catégories</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr app-liste-vente [allData]="allData" *ngFor="let item of paginatedArticles" [article]="item">
+                    
+                  </tr>
+                </tbody>
+              </table>
+              <div class="pagination" style="margin-left: 30%;">
+                <button class="btn" [disabled]="currentPage === 1" (click)="changePage(-1)">Précédent</button>
+                <ng-container *ngFor="let pageNumber of pageNumbers">
+                  <button class="btn" [class.current]="pageNumber === currentPage" (click)="goToPage(pageNumber)">{{ pageNumber }}</button>
+                </ng-container>
+                <button class="btn" [disabled]="currentPage === totalPages" (click)="changePage(1)">Suivant</button>
+              </div>
+              
+  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
