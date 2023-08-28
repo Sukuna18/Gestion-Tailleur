@@ -22,7 +22,7 @@ class StoreArticleVenteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle' => 'required|string',
+            'libelle' => 'required|string|unique:article_ventes,libelle',
             'promotion' => 'nullable|numeric',
             'ref' => 'required|string',
             'marge' => 'required|numeric',

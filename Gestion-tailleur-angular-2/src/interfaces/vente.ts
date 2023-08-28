@@ -11,7 +11,9 @@ export interface Vente extends RestResponse<Vente>{
     promoCheck: boolean;
     promotion: number;
     confection: Article[];
-    article_id: number;
+    article: {article_id:number,quantite:number}[];
     articleConfection: void;
+    quantite: number;
+    confections:string[];
     links:Object;
 }

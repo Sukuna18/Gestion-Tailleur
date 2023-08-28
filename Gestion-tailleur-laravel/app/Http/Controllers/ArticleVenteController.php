@@ -10,7 +10,6 @@ use App\Http\Resources\CategorieRessource;
 use App\Models\Article;
 use App\Models\ArticleVente;
 use App\Models\Categorie;
-use App\Models\VenteConfection;
 use Illuminate\Support\Facades\DB;
 
 class ArticleVenteController extends Controller
@@ -20,7 +19,7 @@ class ArticleVenteController extends Controller
      */
     public function index()
     {
-        $all = ArticleVente::paginate(5);
+        $all = ArticleVente::all();
         $categorieVente = Categorie::where('type', 'vente')->get();
         $confection = Article::all();
         return response()->json([

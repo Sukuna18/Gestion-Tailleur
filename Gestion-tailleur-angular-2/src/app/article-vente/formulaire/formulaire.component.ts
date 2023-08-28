@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { LoadImageService } from 'src/app/Service/load-image.service';
 import { Article } from 'src/interfaces/article';
@@ -11,8 +11,10 @@ import notification from 'sweetalert2'
   templateUrl: './formulaire.component.html',
   styleUrls: ['./formulaire.component.css'],
 })
-export class FormulaireComponent implements OnInit {
+export class FormulaireComponent implements OnInit, OnChanges {
   @Output() addArticleEvent: EventEmitter<Partial<Vente>> = new EventEmitter<Partial<Vente>>();
+  @Output() updateArticleEvent: EventEmitter<Partial<Vente|undefined>> = new EventEmitter<Partial<Vente|undefined>>();
+  @Input() updateData: Partial<Vente> = {};
   @Input() allData: {
     articles: Partial<Vente[]>;
     categories: Partial<Category[]>;
@@ -22,9 +24,10 @@ export class FormulaireComponent implements OnInit {
     categories: [],
     confection: [],
   };
+  position:number = 0;
   categorieName: string = '';
   promo: boolean = true;
-  inputNumber: number = 1;
+  total: number = 0;
   btnSubmit: boolean = true;
   libellePattern = '^[a-zA-Z]{3,30}$';
   numberPattern = '^[0-9]*$';
@@ -32,24 +35,40 @@ export class FormulaireComponent implements OnInit {
     libelle: ['', [Validators.required, Validators.pattern(this.libellePattern)]],
     categorie_id: [0, Validators.required],
     ref: ['', Validators.required],
-    cout_fabrication: [null, [Validators.required, Validators.pattern(this.numberPattern)]],
-    prix_de_vente: [null, [Validators.required, Validators.pattern(this.numberPattern)]],
-    marge: [null, [Validators.required, Validators.pattern(this.numberPattern)]],
+    cout_fabrication: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
+    prix_de_vente: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
+    marge: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
     promoCheck: [false, Validators.required],
-    promotion: [null, [Validators.required, Validators.pattern(this.numberPattern)]],
-    qte: [null, [Validators.required, Validators.pattern(this.numberPattern)]],
+    promotion: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
     confectionId: [0, Validators.required],
-    article_id: this.fb.array([])
+    article: this.fb.array([])
   });  
+  searchResult: any[] = [];
   constructor(
     protected imageService: LoadImageService,
     private fb: FormBuilder
   ) {}
   ngOnInit(): void {}
   get confections():FormArray<any>{
-    return this.useForm.get('article_id') as FormArray
+    return this.useForm.get('article') as FormArray
   }
+  ngOnChanges(changes:SimpleChanges) {
+    if (changes['updateData'] && this.updateData) {
+      this.renderEditedData();
+    }
+  }
+
   addArticleVente() {
+    const formData = this.useForm.value;
+    const articlesData = this.confections.controls.map(control => {
+      return {
+        article_id: control.get('article_id')?.value,
+        quantite: control.get('quantite')?.value
+      };
+    });
+
+    const venteData = this.createVenteData(formData);
+    if(Object.keys(this.updateData).length == 0 ){
     if(this.useForm.value.confectionId === 0){
       notification.fire({
         icon: 'error',
@@ -58,7 +77,7 @@ export class FormulaireComponent implements OnInit {
       });
       return;
     }
-    if(this.inputNumber < 3){
+    if(this.confections.controls.length < 3){
       notification.fire({
         icon: 'error',
         title: 'Oops...',
@@ -66,32 +85,26 @@ export class FormulaireComponent implements OnInit {
       });
       return;
     }
-    const formData = this.useForm.value;    
-    if(!this.confections.value.includes(formData.confectionId)){
-      this.confections.push(this.fb.control(formData.confectionId));
-    }
-    const venteData: Partial<Vente> = {
-      libelle: formData.libelle || undefined,
-      categorie_id: formData.categorie_id !== null ? formData.categorie_id : undefined,
-      ref: formData.ref || undefined,
-      cout_fabrication: formData.cout_fabrication !== null ? formData.cout_fabrication : undefined,
-      prix_de_vente: formData.prix_de_vente !== null ? formData.prix_de_vente : undefined,
-      marge: formData.marge !== null ? formData.marge : undefined,
-      promoCheck: formData.promoCheck !== null ? formData.promoCheck : undefined,
-      promotion: formData.promotion !== null ? formData.promotion : undefined,
-      article_id: this.confections.value,
-    };
+   
     console.log(venteData);
-    
-    this.addArticleEvent.emit({...venteData, image: this.imageService.thumbnail});
-  }
+    this.addArticleEvent.emit({ ...venteData, article: articlesData, image: this.imageService.thumbnail });
+  } else {
+    // const formData = this.useForm.value;
+    // const venteData = this.createVenteData(formData);
+console.log('hello world');
 
+    // this.updateArticleEvent.emit({ ...venteData });
+  }
+  // this.resetForm();
+  }
   duplicateInputField() {
-    this.inputNumber++;
-    const articleId = this.useForm.get('confectionId')?.value;
-    if(!this.confections.value.includes(articleId)){
-      this.confections.push(this.fb.control(articleId));
-    }
+    console.log(this.confections.value);
+      this.confections.push(this.fb.group({
+        libelle: ['', Validators.required],
+        quantite: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
+        article_id: [0, Validators.required],
+        
+      }));
   }
   refInput(e?: Event):void {
     const inputElement = e?.target as HTMLInputElement;
@@ -103,39 +116,53 @@ export class FormulaireComponent implements OnInit {
     const lib = this.useForm.value.libelle?.substring(0,3);
     this.useForm.get('ref')?.patchValue(`REF-${lib?.toUpperCase()}-${this.categorieName}-${result?.count}`);
   }
-  searchArticle(event: any) {
-    console.log(this.useForm.value.categorie_id);
-    const value = event.target.value;
-      this.btnSubmit = this.allData.articles.some((article) => {
-        return article?.libelle === value || value.length < 3;
-      }
-      );
+  selectConfection(e:Event) {
+    const inputElement = e?.target as HTMLInputElement;
+    const confectionId = inputElement?.value;
+    console.log(confectionId);
+    
+    let result =  this.allData.confection.find((article):boolean => article?.id == +confectionId);
+    if(result){
+      console.log(this.position);
+      
+      this.useForm.get('confectionId')?.patchValue(result.id);      
+      this.confections.controls[this.position].get('libelle')?.patchValue(result.libelle);
+      this.confections.controls[this.position].get('article_id')?.patchValue(result.id);
+
+    }
+    this.searchResult = [];
   }
-  searchConfection(event: any) {
-    this.btnSubmit = true;
-    console.log(this.allData.confection);
-    const value = event.target.value;
-    this.allData.confection.forEach((article) => {
-      if (article?.libelle === value) {
-        console.log('ok');
-        this.btnSubmit = false;
-        this.useForm.patchValue({
-          confectionId: article?.id,
-        });
-        console.log(this.useForm.value.confectionId);
-        
+  searchConfection(event: any,pos: number) {
+    this.position = pos;
+    const value = (event.target as HTMLInputElement).value;
+    this.searchResult = this.allData.confection.filter((article): boolean => {
+      if(article?.id){
+        this.useForm.get('confectionId')?.patchValue(article?.id);
       }
+      return article?.libelle.toLowerCase().search(value.toLowerCase()) !== -1;
     });
   }
-  quantityCheck(event: any) {
-    this.btnSubmit = true;
-    const value = event.target.value;
-    this.allData.confection.forEach((article) => {
-      if (article?.id === this.useForm.value.confectionId) {
-        article?.stock && article?.stock < value ? this.btnSubmit = true : this.btnSubmit = false;
+  quantityCheck() {
+    let total = 0;
+    this.confections.controls.forEach((control) => {
+      const quantite = control.get('quantite')?.value;
+      const article = this.allData.confection.find((article) => article?.id == this.useForm.value.confectionId);
+      if(article?.prix){
+        total += quantite * article.prix;
       }
+    });
+    this.useForm.patchValue({
+      cout_fabrication: total,
+      prix_de_vente: total,
+    });
+  }
+  marginCheck() {
+    if (this.useForm.value.marge) {
+      const marge = this.useForm.value.marge;
+      const prix_de_vente = this.useForm.value.prix_de_vente ? +this.useForm.value.prix_de_vente : 0;
+      const total = marge + prix_de_vente!;
+      this.useForm.get('prix_de_vente')?.patchValue(total);
     }
-    );
   }
   promoCheck(event: any) {
     if (event.target.checked) {
@@ -146,5 +173,54 @@ export class FormulaireComponent implements OnInit {
       this.useForm.get('promotion')?.clearValidators();
     }
   }
+  updateArticle(data: Partial<Vente>){
+    this.updateArticleEvent.emit({...data});
+  }
+  renderEditedData(): void {
+    if(this.updateData){
+      this.useForm.patchValue({
+        libelle: this.updateData.libelle,
+        categorie_id: this.updateData.categorie_id,
+        ref: this.updateData.ref,
+        cout_fabrication: this.updateData.cout_fabrication,
+        prix_de_vente: this.updateData.prix_de_vente,
+        marge: this.updateData.marge,
+        promoCheck: this.updateData.promoCheck,
+        promotion: this.updateData.promotion,
+      });
+    }
+  }
+resetForm(){
+  this.useForm.patchValue({
+    libelle: '',
+    categorie_id: 0,
+    ref: '',
+    cout_fabrication: null,
+    prix_de_vente: null,
+    marge: null,
+    promoCheck: false,
+    promotion: null,
+    confectionId: 0,
+    article: []
+  });
+}
+createVenteData(formData: any) {
+  const venteData: Partial<Vente> = {
+    libelle: formData.libelle || undefined,
+    categorie_id: formData.categorie_id || undefined,
+    ref: formData.ref || undefined,
+    cout_fabrication: formData.cout_fabrication || undefined,
+    prix_de_vente: formData.prix_de_vente || undefined,
+    marge: formData.marge || undefined,
+    promoCheck: formData.promoCheck || undefined,
+    promotion: formData.promotion || undefined,
+    article: this.confections.value,
+  };
+
+  return venteData;
+}
+calculateTotal(value:any) {
 
 }
+}
+

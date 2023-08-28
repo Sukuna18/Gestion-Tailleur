@@ -6,7 +6,6 @@
           <label for="labelField" class="form-label">Label</label>
           <input
             (change)="refInput($event)"
-            (input)="searchArticle($event)"
             formControlName="libelle"
             type="text"
             class="form-control"
@@ -100,24 +99,24 @@
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let i of [].constructor(inputNumber)">
+          <tbody formArrayName="article">
+            <tr *ngFor="let control of confections.controls;index as pos" [formGroupName]="pos">
               <td>
                 <label for="">Confection</label>
                 <input
-                  (input)="searchConfection($event)"
-                  formArrayName="article_id"
+                  (input)="searchConfection($event,pos)"
+                 formControlName="libelle"
                   type="text"
                   class="form-control"
                   id="itemField"
                   placeholder="Item"
                 />
+                <input type="hidden" formControlName="article_id">
                 <small
                   *ngIf="
-                    useForm.controls['libelle'].invalid &&
-                    (useForm.controls['libelle'].touched ||
-                      useForm.controls['libelle'].dirty)
-                  "
+                    confections.controls[pos].invalid &&
+                    (confections.controls[pos].touched ||
+                      confections.controls[pos].dirty)"
                   class="text-danger"
                 >
                   Le libelle est invalide
@@ -126,8 +125,8 @@
               <td>
                 <label for="">Quantite</label>
                 <input
-                  (input)="quantityCheck($event)"
-                  formControlName="qte"
+                  (change)="quantityCheck()"
+                  formControlName="quantite"
                   type="number"
                   class="form-control"
                   id="qteField"
@@ -135,16 +134,20 @@
                 />
                 <small
                   *ngIf="
-                    useForm.controls['qte'].invalid &&
-                    (useForm.controls['qte'].touched ||
-                      useForm.controls['qte'].dirty)
-                  "
+                    confections.controls[pos].invalid &&
+                    (confections.controls[pos].touched ||
+                      confections.controls[pos].dirty)"
                   class="text-danger"
                 >
                   La quantite doit etre un entier positif
                 </small>
               </td>
             </tr>
+            <div>
+              <ul *ngFor="let item of searchResult" class="bg-primary">
+                <li [value]="item.id" (click)="selectConfection($event)">{{item?.libelle}}</li>
+              </ul>
+            </div>
             <!-- Add more rows as needed -->
           </tbody>
         </table>
@@ -153,6 +156,7 @@
         <div>
           <label for="">Cout de fabrication</label>
           <input
+            readonly
             formControlName="cout_fabrication"
             type="number"
             class="form-control"
@@ -173,6 +177,7 @@
         <div>
           <label for="">marge</label>
           <input
+          (change)="marginCheck()"
             formControlName="marge"
             type="number"
             class="form-control"
@@ -194,6 +199,7 @@
       <div class="mb-3">
         <label for="">Prix de vente</label>
         <input
+          readonly
           formControlName="prix_de_vente"
           type="number"
           class="form-control"
@@ -239,7 +245,7 @@
               >
                 <img
                   *ngIf="imageService.thumbnail"
-                  [src]="imageService.thumbnail"
+                  [src]="updateData.image ?? imageService.thumbnail"
                   alt="Aperçu de l'image"
                   style="max-width: 100%; max-height: 100%"
                 />
@@ -260,14 +266,7 @@
       </div>
       <div class="mb-3" style="display: flex; justify-content: center">
         <button
-          [disabled]="
-            useForm.controls['libelle'].invalid ||
-            useForm.controls['prix_de_vente'].invalid ||
-            useForm.controls['cout_fabrication'].invalid ||
-            useForm.controls['marge'].invalid ||
-            useForm.controls['qte'].invalid ||
-            btnSubmit
-          "
+          [disabled]="false"
           class="btn btn-primary"
           style="padding: 10px 80px"
           (click)="addArticleVente()"

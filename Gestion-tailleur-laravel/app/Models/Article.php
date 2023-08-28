@@ -20,6 +20,10 @@ class Article extends Model
     {
         return $this->belongsToMany(Fournisseur::class, 'article_fournisseurs', 'article_id', 'fournisseur_id');
     }
+    public function vente_confection()
+    {
+        return $this->belongsToMany(ArticleVente::class, 'vente_confections', 'article_id', 'article_vente_id');
+    }
     protected static function booted()
     {
         static::created(function ($article) {

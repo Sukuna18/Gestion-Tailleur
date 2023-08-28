@@ -10,6 +10,7 @@ import { Article } from 'src/interfaces/article';
   styleUrls: ['./article-vente.component.css'],
 })
 export class ArticleVenteComponent implements OnInit {
+  updateData: Partial<Vente> = {};
   currentPage: number = 1; 
   itemsPerPage: number = 2; 
   allData: {
@@ -34,6 +35,8 @@ export class ArticleVenteComponent implements OnInit {
   }
   addArticleVente(data: Partial<Vente>) {
     this.venteService.add(data).subscribe();
+    //@ts-ignore
+    this.allData.articles.push(data);
   }
   get totalPages(): number {
     return Math.ceil(this.allData.articles.length / this.itemsPerPage);
@@ -45,6 +48,38 @@ export class ArticleVenteComponent implements OnInit {
       this.currentPage = newPage;
     }
   }
+  updateArticle(data: Partial<Vente>) {
+    this.updateData = data;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   get paginatedArticles(){
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.allData.articles.slice(startIndex, startIndex + this.itemsPerPage);

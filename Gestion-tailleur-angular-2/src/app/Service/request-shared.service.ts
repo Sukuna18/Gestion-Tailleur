@@ -38,8 +38,7 @@ export abstract class RequestSharedService<T extends RestResponse<T>> {
       });
 
       }),
-      catchError(this.handleError)
-    );
+      catchError(this.handleError));
   }
   delete(id: number): Observable<T> {
     return this.http.delete<T>(environment.api.baseUrl + `/${this.uri()}/${id}`).pipe(
@@ -68,9 +67,15 @@ export abstract class RequestSharedService<T extends RestResponse<T>> {
   }
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {
+
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error);
     } else {
+      notification.fire({
+        title : 'Erreur',
+        icon : 'error',
+        text : error.error.message,
+    });
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.
       console.error(

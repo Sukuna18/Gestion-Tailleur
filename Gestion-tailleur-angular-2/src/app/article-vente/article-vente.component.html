@@ -22,19 +22,18 @@
         <div class="col-md-12">
           <div class="card custom-card">
             <div class="card-body">
-              <app-formulaire [allData]="allData" (addArticleEvent)="addArticleVente($event)"></app-formulaire>
+              <app-formulaire [updateData]="updateData" [allData]="allData" (addArticleEvent)="addArticleVente($event)"></app-formulaire>
               <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">Article</th>
-                    <th scope="col">Prix</th>
-                    <th scope="col">Stock</th>
-                    <th scope="col">Catégories</th>
+                    <th scope="col">Quantite</th>
+                    <th scope="col">Article Confection</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr app-liste-vente [allData]="allData" *ngFor="let item of paginatedArticles" [article]="item">
+                  <tr app-liste-vente [allData]="allData" (updateArticleForm)="updateArticle($event)" *ngFor="let item of paginatedArticles" [article]="item">
                     
                   </tr>
                 </tbody>

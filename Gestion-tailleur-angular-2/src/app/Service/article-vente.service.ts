@@ -6,7 +6,7 @@ import { Vente } from 'src/interfaces/vente';
 @Injectable({
   providedIn: 'root'
 })
-export class ArticleVenteService extends RequestSharedService<RestResponse<Vente>>  {
+export class ArticleVenteService extends RequestSharedService<RestResponse<Partial<Vente>>>  {
 
   override uri(): string {
     return 'ventes';

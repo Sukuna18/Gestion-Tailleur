@@ -23,7 +23,12 @@ class ArticleVenteRessource extends JsonResource
             'prix_de_vente' => $this->prix_de_vente,
             'cout_fabrication' => $this->cout_fabrication,
             'image' => $this->image,
-            'categorie' => $this->categorie->libelle,
+            'quantite' => $this->vente_confection->sum('quantite'),
+            'confections' => $this->vente_confection->map(function ($confection) {
+                return [
+                    $confection->libelle
+                ];
+            }),
         ];
     }
 }
