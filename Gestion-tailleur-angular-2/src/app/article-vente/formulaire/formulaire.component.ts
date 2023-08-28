@@ -13,7 +13,7 @@ import notification from 'sweetalert2'
 })
 export class FormulaireComponent implements OnInit, OnChanges {
   @Output() addArticleEvent: EventEmitter<Partial<Vente>> = new EventEmitter<Partial<Vente>>();
-  @Output() updateArticleEvent: EventEmitter<Partial<Vente|undefined>> = new EventEmitter<Partial<Vente|undefined>>();
+  @Output() updateArticleEvent: EventEmitter<Partial<Vente>> = new EventEmitter<Partial<Vente>>();
   @Input() updateData: Partial<Vente> = {};
   @Input() allData: {
     articles: Partial<Vente[]>;
@@ -38,8 +38,8 @@ export class FormulaireComponent implements OnInit, OnChanges {
     cout_fabrication: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
     prix_de_vente: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
     marge: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
-    promoCheck: [false, Validators.required],
-    promotion: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
+    promoCheck: [false],
+    promotion: [0],
     confectionId: [0, Validators.required],
     article: this.fb.array([])
   });  
@@ -69,7 +69,7 @@ export class FormulaireComponent implements OnInit, OnChanges {
 
     const venteData = this.createVenteData(formData);
     if(Object.keys(this.updateData).length == 0 ){
-    if(this.useForm.value.confectionId === 0){
+    if(this.useForm.value.categorie_id === 0){
       notification.fire({
         icon: 'error',
         title: 'Oops...',
@@ -85,22 +85,37 @@ export class FormulaireComponent implements OnInit, OnChanges {
       });
       return;
     }
+    if(this.searchResult.length > 0 || this.confections.value.length == 0){
+      notification.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Veuillez choisir un article de confection dans la liste!',
+      });
+      return;
+    }
+    if(this.useForm.invalid || this.confections.invalid){
+      notification.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Veuillez remplir et valider tous les champs!',
+      });
+      return;
+    }
    
     console.log(venteData);
     this.addArticleEvent.emit({ ...venteData, article: articlesData, image: this.imageService.thumbnail });
   } else {
-    // const formData = this.useForm.value;
-    // const venteData = this.createVenteData(formData);
-console.log('hello world');
+  console.log('update');
 
-    // this.updateArticleEvent.emit({ ...venteData });
+    this.updateArticle({ ...venteData, article: articlesData, image: this.imageService.thumbnail, id: this.updateData.id })
+    this.updateData = {};
   }
   // this.resetForm();
   }
   duplicateInputField() {
     console.log(this.confections.value);
       this.confections.push(this.fb.group({
-        libelle: ['', Validators.required],
+        libelle: ['', [Validators.required, Validators.pattern(this.libellePattern)]],
         quantite: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
         article_id: [0, Validators.required],
         
@@ -219,8 +234,8 @@ createVenteData(formData: any) {
 
   return venteData;
 }
-calculateTotal(value:any) {
-
+removeInputField(i: number) {
+  this.confections.removeAt(i);
 }
 }
 

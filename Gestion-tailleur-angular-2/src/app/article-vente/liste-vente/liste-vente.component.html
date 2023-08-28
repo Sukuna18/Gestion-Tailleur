@@ -1,6 +1,6 @@
 <td>{{article?.libelle}}</td>
 <td>{{article?.quantite}}</td>
-<td><span *ngFor="let item of article?.confections">{{item}};   </span></td>
+<td><span *ngFor="let item of article?.confections">{{item.libelle}} {{item.quantite}};   </span></td>
 <td>
   <button class="btn btn-warning" (click)="editArticle(article?.id)">Modifier</button>
   <button class="btn btn-danger" style="margin-left: 20px">Supprimer</button>

@@ -22,11 +22,12 @@ class ArticleVenteRessource extends JsonResource
             'marge' => $this->marge,
             'prix_de_vente' => $this->prix_de_vente,
             'cout_fabrication' => $this->cout_fabrication,
+            'quantite' => 0,
             'image' => $this->image,
-            'quantite' => $this->vente_confection->sum('quantite'),
             'confections' => $this->vente_confection->map(function ($confection) {
                 return [
-                    $confection->libelle
+                    'libelle' => $confection->libelle,
+                    'quantite' => $confection->pivot->quantite,
                 ];
             }),
         ];

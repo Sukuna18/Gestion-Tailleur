@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('prix_de_vente');
             $table->integer('cout_fabrication');
             $table->longText('image')->nullable();
+            $table->integer('quantite')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

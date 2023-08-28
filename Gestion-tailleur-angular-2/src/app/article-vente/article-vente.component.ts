@@ -38,6 +38,9 @@ export class ArticleVenteComponent implements OnInit {
     //@ts-ignore
     this.allData.articles.push(data);
   }
+  updateArticleVente(data: Partial<Vente>) {
+    this.venteService.update(data).subscribe();
+  }
   get totalPages(): number {
     return Math.ceil(this.allData.articles.length / this.itemsPerPage);
   }

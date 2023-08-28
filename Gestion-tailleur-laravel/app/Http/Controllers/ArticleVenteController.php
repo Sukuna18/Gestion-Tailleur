@@ -83,7 +83,7 @@ class ArticleVenteController extends Controller
                 'cout_fabrication' => $request->cout_fabrication,
                 'image' => $request->image,
             ]);
-            $articleVente->vente_confection()->sync($request->article_id);
+            $articleVente->vente_confection()->sync($request->article);
 
         });
 

@@ -26,7 +26,7 @@ class ArticleVente extends Model
         return $this->belongsTo(Categorie::class);
     }
     public function vente_confection(){
-        return $this->belongsToMany(Article::class, 'vente_confections', 'article_vente_id', 'article_id');
+        return $this->belongsToMany(Article::class, 'vente_confections', 'article_vente_id', 'article_id')->withPivot('quantite');
     }
     protected static function booted()
     {

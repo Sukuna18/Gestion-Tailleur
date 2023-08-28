@@ -100,23 +100,27 @@
             </tr>
           </thead>
           <tbody formArrayName="article">
-            <tr *ngFor="let control of confections.controls;index as pos" [formGroupName]="pos">
+            <tr
+              *ngFor="let control of confections.controls; index as pos"
+              [formGroupName]="pos"
+            >
               <td>
                 <label for="">Confection</label>
                 <input
-                  (input)="searchConfection($event,pos)"
-                 formControlName="libelle"
+                  (input)="searchConfection($event, pos)"
+                  formControlName="libelle"
                   type="text"
                   class="form-control"
                   id="itemField"
                   placeholder="Item"
                 />
-                <input type="hidden" formControlName="article_id">
+                <input type="hidden" formControlName="article_id" />
                 <small
                   *ngIf="
                     confections.controls[pos].invalid &&
                     (confections.controls[pos].touched ||
-                      confections.controls[pos].dirty)"
+                      confections.controls[pos].dirty)
+                  "
                   class="text-danger"
                 >
                   Le libelle est invalide
@@ -136,16 +140,36 @@
                   *ngIf="
                     confections.controls[pos].invalid &&
                     (confections.controls[pos].touched ||
-                      confections.controls[pos].dirty)"
+                      confections.controls[pos].dirty)
+                  "
                   class="text-danger"
                 >
                   La quantite doit etre un entier positif
                 </small>
               </td>
+              <td>
+                <p style="color: red">
+                  <svg
+                    (click)="removeInputField(pos)"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-x-lg"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
+                    />
+                  </svg>
+                </p>
+              </td>
             </tr>
             <div>
               <ul *ngFor="let item of searchResult" class="bg-primary">
-                <li [value]="item.id" (click)="selectConfection($event)">{{item?.libelle}}</li>
+                <li [value]="item.id" (click)="selectConfection($event)">
+                  {{ item?.libelle }}
+                </li>
               </ul>
             </div>
             <!-- Add more rows as needed -->
@@ -177,7 +201,7 @@
         <div>
           <label for="">marge</label>
           <input
-          (change)="marginCheck()"
+            (change)="marginCheck()"
             formControlName="marge"
             type="number"
             class="form-control"
