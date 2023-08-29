@@ -29,8 +29,8 @@ export class FormulaireComponent implements OnInit, OnChanges {
   promo: boolean = true;
   total: number = 0;
   btnSubmit: boolean = true;
-  libellePattern = '^[a-zA-Z]{3,30}$';
-  numberPattern = '^[0-9]*$';
+  libellePattern:string = '^[a-zA-Z]{3,30}$';
+  numberPattern:string = '^[0-9]*$';
   useForm = this.fb.group({
     libelle: ['', [Validators.required, Validators.pattern(this.libellePattern)]],
     categorie_id: [0, Validators.required],
@@ -54,6 +54,7 @@ export class FormulaireComponent implements OnInit, OnChanges {
   }
   ngOnChanges(changes:SimpleChanges) {
     if (changes['updateData'] && this.updateData) {
+      console.log(this.updateData);
       this.renderEditedData();
     }
   }
@@ -68,7 +69,6 @@ export class FormulaireComponent implements OnInit, OnChanges {
     });
 
     const venteData = this.createVenteData(formData);
-    if(Object.keys(this.updateData).length == 0 ){
     if(this.useForm.value.categorie_id === 0){
       notification.fire({
         icon: 'error',
@@ -102,11 +102,11 @@ export class FormulaireComponent implements OnInit, OnChanges {
       return;
     }
    
+    if(Object.keys(this.updateData).length == 0 ){
     console.log(venteData);
     this.addArticleEvent.emit({ ...venteData, article: articlesData, image: this.imageService.thumbnail });
   } else {
-  console.log('update');
-
+    console.log('update');
     this.updateArticle({ ...venteData, article: articlesData, image: this.imageService.thumbnail, id: this.updateData.id })
     this.updateData = {};
   }
@@ -114,6 +114,7 @@ export class FormulaireComponent implements OnInit, OnChanges {
   }
   duplicateInputField() {
     console.log(this.confections.value);
+
       this.confections.push(this.fb.group({
         libelle: ['', [Validators.required, Validators.pattern(this.libellePattern)]],
         quantite: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
@@ -192,6 +193,7 @@ export class FormulaireComponent implements OnInit, OnChanges {
     this.updateArticleEvent.emit({...data});
   }
   renderEditedData(): void {
+    this.confections.clear();
     if(this.updateData){
       this.useForm.patchValue({
         libelle: this.updateData.libelle,
@@ -202,9 +204,17 @@ export class FormulaireComponent implements OnInit, OnChanges {
         marge: this.updateData.marge,
         promoCheck: this.updateData.promoCheck,
         promotion: this.updateData.promotion,
+        article: this.updateData.confections?.map((article):void => {
+          this.confections.push(this.fb.group({
+            libelle: [article.libelle, [Validators.required, Validators.pattern(this.libellePattern)]],
+            quantite: [article.quantite, [Validators.required, Validators.pattern(this.numberPattern)]],
+            article_id: [article.article_id, Validators.required],
+          }));
+        }
+        )
       });
-    }
   }
+}
 resetForm(){
   this.useForm.patchValue({
     libelle: '',

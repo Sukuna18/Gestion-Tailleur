@@ -54,6 +54,15 @@ export class ArticleVenteComponent implements OnInit {
   updateArticle(data: Partial<Vente>) {
     this.updateData = data;
   }
+  deleteArticle(id: number): void {
+    const confirmation = confirm('Voulez-vous vraiment supprimer cet article ?');
+    if (!confirmation) {
+      return;
+    }else{
+      this.venteService.delete(id).subscribe();
+      this.allData.articles = this.allData.articles.filter((a:Vente|undefined):boolean => a?.id !== id);
+    }
+  }
 
 
 

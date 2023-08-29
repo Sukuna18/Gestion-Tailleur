@@ -44,6 +44,11 @@ export abstract class RequestSharedService<T extends RestResponse<T>> {
     return this.http.delete<T>(environment.api.baseUrl + `/${this.uri()}/${id}`).pipe(
       tap((response: any): void => {
         console.log(response);
+        notification.fire({
+          title : 'Succès',
+          icon : 'success',
+          text : 'Données supprimées avec succès',
+      });
       }),
       catchError(this.handleError)
     );

@@ -14,6 +14,6 @@ export interface Vente extends RestResponse<Vente>{
     article: {article_id:number,quantite:number}[];
     articleConfection: void;
     quantite: number;
-    confections:{libelle:string,quantite:number}[];
+    confections:{libelle:string,quantite:number,article_id:number}[];
     links:Object;
 }

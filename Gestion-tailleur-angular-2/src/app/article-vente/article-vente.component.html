@@ -33,7 +33,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr app-liste-vente [allData]="allData" (updateArticleForm)="updateArticle($event)" *ngFor="let item of paginatedArticles" [article]="item">
+                  <tr app-liste-vente [allData]="allData" (updateArticleForm)="updateArticle($event)" (deleteArticleEvent)="deleteArticle($event)" *ngFor="let item of paginatedArticles" [article]="item">
                     
                   </tr>
                 </tbody>
@@ -45,8 +45,6 @@
                 </ng-container>
                 <button class="btn" [disabled]="currentPage === totalPages" (click)="changePage(1)">Suivant</button>
               </div>
-              
-  
             </div>
           </div>
         </div>

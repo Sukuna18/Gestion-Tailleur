@@ -11,6 +11,7 @@ import { Vente } from 'src/interfaces/vente';
 export class ListeVenteComponent implements OnInit {
   upatedVente: Vente | undefined;
   @Output() updateArticleForm: EventEmitter<Partial<Vente>> = new EventEmitter<Partial<Vente>>();
+  @Output() deleteArticleEvent: EventEmitter<any> = new EventEmitter();
 @Input() allData: {
   articles: Partial<Vente[]>;
   categories: Partial<Category[]>;
@@ -30,5 +31,8 @@ editArticle(id: number|undefined): void {
 }
 updateArticle(data:Vente|undefined): void {
   this.updateArticleForm.emit(data);
+}
+deleteArticle(id: number | undefined): void {
+  this.deleteArticleEvent.emit(id);
 }
 }
