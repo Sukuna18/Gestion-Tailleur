@@ -28,6 +28,7 @@ class ArticleVenteRessource extends JsonResource
                 return [
                     'libelle' => $confection->libelle,
                     'quantite' => $confection->pivot->quantite,
+                    'article_id' => $confection->id,
                 ];
             }),
         ];
