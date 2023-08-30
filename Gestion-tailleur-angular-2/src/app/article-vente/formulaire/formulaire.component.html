@@ -51,6 +51,7 @@
         <div [hidden]="promo">
           <label for="">Valeur</label>
           <input
+          (change)="promoPricing()"
             formControlName="promotion"
             type="number"
             class="form-control"
@@ -129,7 +130,7 @@
               <td>
                 <label for="">Quantite</label>
                 <input
-                  (change)="quantityCheck()"
+                  (change)="quantityCheck($event, pos)"
                   formControlName="quantite"
                   type="number"
                   class="form-control"

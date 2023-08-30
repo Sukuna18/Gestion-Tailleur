@@ -3,6 +3,7 @@ import { ArticleVenteService } from '../Service/article-vente.service';
 import { Vente } from 'src/interfaces/vente';
 import { Category } from 'src/interfaces/categories';
 import { Article } from 'src/interfaces/article';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-article-vente',
@@ -55,13 +56,23 @@ export class ArticleVenteComponent implements OnInit {
     this.updateData = data;
   }
   deleteArticle(id: number): void {
-    const confirmation = confirm('Voulez-vous vraiment supprimer cet article ?');
-    if (!confirmation) {
-      return;
-    }else{
-      this.venteService.delete(id).subscribe();
-      this.allData.articles = this.allData.articles.filter((a:Vente|undefined):boolean => a?.id !== id);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.venteService.delete(id).subscribe();
+        this.allData.articles = this.allData.articles.filter((a:Vente|undefined):boolean => a?.id !== id);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Suppression annulée', '', 'info');
+        return;
+      }
+    })
   }
 
 

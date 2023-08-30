@@ -24,6 +24,8 @@ export class FormulaireComponent implements OnInit, OnChanges {
     categories: [],
     confection: [],
   };
+  confectionsTable: string[] = [];
+  articleIds:number[] = [];
   position:number = 0;
   categorieName: string = '';
   promo: boolean = true;
@@ -69,41 +71,41 @@ export class FormulaireComponent implements OnInit, OnChanges {
     });
 
     const venteData = this.createVenteData(formData);
-    if(this.useForm.value.categorie_id === 0){
-      notification.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Veuillez choisir une categorie!',
-      });
-      return;
-    }
-    if(this.confections.controls.length < 3){
-      notification.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Veuillez ajouter au moins 3 articles!',
-      });
-      return;
-    }
-    if(this.searchResult.length > 0 || this.confections.value.length == 0){
-      notification.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Veuillez choisir un article de confection dans la liste!',
-      });
-      return;
-    }
-    if(this.useForm.invalid || this.confections.invalid){
-      notification.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Veuillez remplir et valider tous les champs!',
-      });
-      return;
-    }
-   
+    
     if(Object.keys(this.updateData).length == 0 ){
-    console.log(venteData);
+      console.log(venteData);
+      if(this.useForm.value.categorie_id === 0){
+        notification.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Veuillez choisir une categorie!',
+        });
+        return;
+      }
+      if(this.confections.controls.length < 3){
+        notification.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Veuillez ajouter au moins 3 articles!',
+        });
+        return;
+      }
+      if(this.useForm.invalid || this.confections.invalid){
+        notification.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Veuillez remplir et valider tous les champs!',
+        });
+        return;
+      }
+      if(!this.confectionsTable.includes('tissu') && !this.confectionsTable.includes('fil') && !this.confectionsTable.includes('bouton') || this.confectionsTable.length < 3 || this.articleIds.length < 3){
+        notification.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'les articles doivent au moins contenir un tissu, un fil et un bouton!',
+        });
+        return;
+      }
     this.addArticleEvent.emit({ ...venteData, article: articlesData, image: this.imageService.thumbnail });
   } else {
     console.log('update');
@@ -114,13 +116,12 @@ export class FormulaireComponent implements OnInit, OnChanges {
   }
   duplicateInputField() {
     console.log(this.confections.value);
-
       this.confections.push(this.fb.group({
         libelle: ['', [Validators.required, Validators.pattern(this.libellePattern)]],
         quantite: [0, [Validators.required, Validators.pattern(this.numberPattern)]],
         article_id: [0, Validators.required],
-        
       }));
+
   }
   refInput(e?: Event):void {
     const inputElement = e?.target as HTMLInputElement;
@@ -133,14 +134,13 @@ export class FormulaireComponent implements OnInit, OnChanges {
     this.useForm.get('ref')?.patchValue(`REF-${lib?.toUpperCase()}-${this.categorieName}-${result?.count}`);
   }
   selectConfection(e:Event) {
+    this.useForm.get('confectionId')?.patchValue(0);
     const inputElement = e?.target as HTMLInputElement;
     const confectionId = inputElement?.value;
     console.log(confectionId);
     
     let result =  this.allData.confection.find((article):boolean => article?.id == +confectionId);
     if(result){
-      console.log(this.position);
-      
       this.useForm.get('confectionId')?.patchValue(result.id);      
       this.confections.controls[this.position].get('libelle')?.patchValue(result.libelle);
       this.confections.controls[this.position].get('article_id')?.patchValue(result.id);
@@ -148,21 +148,44 @@ export class FormulaireComponent implements OnInit, OnChanges {
     }
     this.searchResult = [];
   }
-  searchConfection(event: any,pos: number) {
+  searchConfection(event: Event,pos: number) {
     this.position = pos;
     const value = (event.target as HTMLInputElement).value;
     this.searchResult = this.allData.confection.filter((article): boolean => {
-      if(article?.id){
-        this.useForm.get('confectionId')?.patchValue(article?.id);
+      if(article?.id && value === article?.libelle && !this.articleIds.includes(article?.id)){
+        this.confections.controls[pos].patchValue({
+          libelle: article?.libelle,
+          article_id: article?.id
+        });
+        this.articleIds.push(article?.id);
+        this.confectionsTable.push(article.libelle);
+        console.log(this.confections.controls[pos].get('article_id')?.value);
+        console.log(this.articleIds,this.confectionsTable,article?.id, this.confections.controls[pos].get('libelle')?.value,article?.libelle);
       }
       return article?.libelle.toLowerCase().search(value.toLowerCase()) !== -1;
     });
   }
-  quantityCheck() {
+  quantityCheck(e:Event,pos:number) {
+    const inputElement = e?.target as HTMLInputElement;
+    let quantite = +inputElement?.value;
+      if(!this.confectionsTable.includes(this.confections.controls[pos].get('libelle')?.value)){
+       this.confections.controls[pos].get('quantite')?.patchValue(quantite);
+       notification.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Veuillez choisir un article de confection dans la liste!',
+      });
+      this.useForm.patchValue({
+        cout_fabrication: 0,
+        prix_de_vente: 0,
+        marge: 0,
+      });
+      return;
+      }
     let total = 0;
     this.confections.controls.forEach((control) => {
       const quantite = control.get('quantite')?.value;
-      const article = this.allData.confection.find((article) => article?.id == this.useForm.value.confectionId);
+      const article = this.allData.confection.find((article) => article?.id == this.confections.controls[pos].get('article_id')?.value);
       if(article?.prix){
         total += quantite * article.prix;
       }
@@ -173,7 +196,7 @@ export class FormulaireComponent implements OnInit, OnChanges {
     });
   }
   marginCheck() {
-    if (this.useForm.value.marge) {
+    if (this.useForm.value.marge && this.useForm.value.cout_fabrication) {
       const marge = this.useForm.value.marge;
       const prix_de_vente = this.useForm.value.prix_de_vente ? +this.useForm.value.prix_de_vente : 0;
       const total = marge + prix_de_vente!;
@@ -229,6 +252,13 @@ resetForm(){
     article: []
   });
 }
+promoPricing(){
+    let promoPrice:number = 0;
+    this.useForm.value.prix_de_vente && this.useForm.value.promotion ? promoPrice = +this.useForm.value.prix_de_vente - +(this.useForm.value.prix_de_vente * this.useForm.value.promotion / 100) : promoPrice = 0;
+    this.useForm.patchValue({
+      prix_de_vente: promoPrice
+    });
+}
 createVenteData(formData: any) {
   const venteData: Partial<Vente> = {
     libelle: formData.libelle || undefined,
@@ -246,6 +276,8 @@ createVenteData(formData: any) {
 }
 removeInputField(i: number) {
   this.confections.removeAt(i);
+  this.confectionsTable.splice(i, 1);
+  this.articleIds.splice(i, 1);
 }
 }
 
