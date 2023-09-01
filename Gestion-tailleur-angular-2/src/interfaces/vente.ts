@@ -3,6 +3,7 @@ import { RestResponse } from "./rest-response";
 
 export interface Vente extends RestResponse<Vente>{
     categorie_id: number;
+    categorie: string;
     ref: string;
     cout_fabrication: number;
     prix_de_vente: number;

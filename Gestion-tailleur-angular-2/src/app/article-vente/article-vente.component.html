@@ -22,28 +22,84 @@
         <div class="col-md-12">
           <div class="card custom-card">
             <div class="card-body">
-              <app-formulaire [updateData]="updateData" [allData]="allData" (addArticleEvent)="addArticleVente($event)" (updateArticleEvent)="updateArticleVente($event)"></app-formulaire>
+              <app-formulaire
+                [updateData]="updateData"
+                [allData]="allData"
+                (addArticleEvent)="addArticleVente($event)"
+                (updateArticleEvent)="updateArticleVente($event)"
+              ></app-formulaire>
+              <div class="input-group rounded" style="width: 50%; display: flex; justify-content: space-between;" >
+                <div>
+                <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" (input)="searchByCategories($event)" />
+                </div>
+                <div class="form-outline">
+                  <input type="number" id="typeNumber" class="form-control" style="width: 40%;" value="5" (change)="itemsPage($event)"/>
+                  <label class="form-label" for="typeNumber">Items</label>
+              </div>
+              </div>
               <table class="table">
                 <thead>
                   <tr>
-                    <th scope="col">Article</th>
+                    <th scope="col">
+                      <svg (click)="filterByNameAsc()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-circle text-success" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>
+                      </svg>
+                      Article
+                      <svg
+                        (click)="filterByNameDesc()"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-arrow-up-circle text-primary"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"
+                        />
+                      </svg>
+                    </th>
                     <th scope="col">Quantite</th>
                     <th scope="col">Article Confection</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr app-liste-vente [allData]="allData" (updateArticleForm)="updateArticle($event)" (deleteArticleEvent)="deleteArticle($event)" *ngFor="let item of paginatedArticles" [article]="item">
-                    
-                  </tr>
+                  <tr
+                    app-liste-vente
+                    [allData]="allData"
+                    (updateArticleForm)="updateArticle($event)"
+                    (deleteArticleEvent)="deleteArticle($event)"
+                    *ngFor="let item of paginatedArticles"
+                    [article]="item"
+                  ></tr>
                 </tbody>
               </table>
-              <div class="pagination" style="margin-left: 30%;">
-                <button class="btn" [disabled]="currentPage === 1" (click)="changePage(-1)">Précédent</button>
+              <div class="pagination" style="margin-left: 30%">
+                <button
+                  class="btn"
+                  [disabled]="currentPage === 1"
+                  (click)="changePage(-1)"
+                >
+                  Précédent
+                </button>
                 <ng-container *ngFor="let pageNumber of pageNumbers">
-                  <button class="btn" [class.current]="pageNumber === currentPage" (click)="goToPage(pageNumber)">{{ pageNumber }}</button>
+                  <button
+                    class="btn"
+                    [class.current]="pageNumber === currentPage"
+                    (click)="goToPage(pageNumber)"
+                  >
+                    {{ pageNumber }}
+                  </button>
                 </ng-container>
-                <button class="btn" [disabled]="currentPage === totalPages" (click)="changePage(1)">Suivant</button>
+                <button
+                  class="btn"
+                  [disabled]="currentPage === totalPages"
+                  (click)="changePage(1)"
+                >
+                  Suivant
+                </button>
               </div>
             </div>
           </div>

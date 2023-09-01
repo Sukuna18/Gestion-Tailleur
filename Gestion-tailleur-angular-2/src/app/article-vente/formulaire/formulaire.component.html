@@ -130,7 +130,7 @@
               <td>
                 <label for="">Quantite</label>
                 <input
-                  (change)="quantityCheck($event, pos)"
+                  (change)="quantityCheck(pos)"
                   formControlName="quantite"
                   type="number"
                   class="form-control"
@@ -204,7 +204,7 @@
           <input
             (change)="marginCheck()"
             formControlName="marge"
-            type="number"
+            type="text"
             class="form-control"
             id="marginField"
             placeholder="Margin"

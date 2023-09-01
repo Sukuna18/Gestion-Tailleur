@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 export class ArticleVenteComponent implements OnInit {
   updateData: Partial<Vente> = {};
   currentPage: number = 1; 
-  itemsPerPage: number = 2; 
+  itemsPerPage: number = 10; 
   allData: {
     articles: Partial<Vente[]>;
     categories: Partial<Category[]>;
@@ -23,6 +23,7 @@ export class ArticleVenteComponent implements OnInit {
     categories: [],
     confection: []
   };
+  filteredArticles: Partial<Vente[]> = [];
 
   ngOnInit(): void {
     this.getAll();
@@ -67,7 +68,8 @@ export class ArticleVenteComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.venteService.delete(id).subscribe();
-        this.allData.articles = this.allData.articles.filter((a:Vente|undefined):boolean => a?.id !== id);
+        //@ts-ignore
+        this.paginatedArticles = this.allData.articles.filter((a:Vente|undefined):boolean => a?.id !== id);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Suppression annulée', '', 'info');
         return;
@@ -75,6 +77,41 @@ export class ArticleVenteComponent implements OnInit {
     })
   }
 
+  filterByNameAsc() {
+    this.allData.articles.sort((a: any, b: any) => {
+      if (a.libelle > b.libelle) {
+        return 1;
+      } else if (a.libelle < b.libelle) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+  filterByNameDesc() {
+    this.allData.articles.sort((a: any, b: any) => {
+      if (a.libelle < b.libelle) {
+        return 1;
+      } else if (a.libelle > b.libelle) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+  searchByCategories($event: Event):void {
+    let value = ($event.target as HTMLInputElement).value;
+    this.allData.articles= this.allData.articles.filter((a: Vente | undefined) => {
+      return a?.categorie?.toLowerCase().search(value.toLowerCase()) !== -1;
+    });
+    if (value === '') {
+      this.getAll();
+    }
+  }
+  itemsPage(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.itemsPerPage = +value;
+  }
 
 
 

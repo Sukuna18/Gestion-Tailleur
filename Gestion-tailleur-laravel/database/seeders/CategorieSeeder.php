@@ -17,17 +17,17 @@ class CategorieSeeder extends Seeder
             [
                 'id' => 1,
                 'type' => 'confection',
-                'libelle' => 'getzner',
+                'libelle' => 'bouton',
             ],
             [
                 'id' => 2,
                 'type' => 'confection',
-                'libelle' => 'fil en coton',
+                'libelle' => 'tissu',
             ],
             [
                 'id' => 3,
                 'type' => 'confection',
-                'libelle' => 'fil en polyester',
+                'libelle' => 'fil',
             ],
             [
                 'id' => 4,
@@ -43,28 +43,7 @@ class CategorieSeeder extends Seeder
                 'id' => 6,
                 'type' => 'vente',
                 'libelle' => 'chemise xxl',
-            ],
-            [
-                'id' => 7,
-                'type' => 'confection',
-                'libelle' => 'plastique',
-            ],
-            [
-                'id' => 8,
-                'type' => 'confection',
-                'libelle' => 'basin',
-            ],
-            [
-                'id' => 9,
-                'type' => 'confection',
-                'libelle' => 'broderie',
-            ],
-            [
-                'id' => 10,
-                'type' => 'confection',
-                'libelle' => 'fermeture',
-            ],
-            
+            ],     
         ];
         \App\Models\Categorie::insert($categories);
     }

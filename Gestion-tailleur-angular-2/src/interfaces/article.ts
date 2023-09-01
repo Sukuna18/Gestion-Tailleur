@@ -9,5 +9,5 @@ export interface Article extends RestResponse<Article> {
     stock: number|null|undefined;
     image: string | undefined;
     REF: string|null|undefined;
-    categorie?: string;
+    categorie: string;
 }

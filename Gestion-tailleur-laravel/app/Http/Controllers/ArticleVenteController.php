@@ -84,7 +84,6 @@ class ArticleVenteController extends Controller
                 'image' => $request->image,
             ]);
             $articleVente->vente_confection()->sync($request->article);
-
         });
 
         return new ArticleVenteRessource($articleVente);

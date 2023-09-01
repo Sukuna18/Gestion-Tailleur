@@ -20,6 +20,7 @@ class ArticleRessource extends JsonResource
             'prix' => $this->prix,
             'stock' => $this->stock,
             'categorie' => $this->categorie->libelle,
+            'categorie_id' => $this->categorie->id,
             'count' => $this->categorie->count,
             'image' => $this->image,
             'REF' => $this->REF,

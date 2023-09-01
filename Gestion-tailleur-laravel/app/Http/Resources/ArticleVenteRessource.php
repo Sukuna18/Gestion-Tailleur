@@ -18,6 +18,7 @@ class ArticleVenteRessource extends JsonResource
             'id' => $this->id,
             'libelle' => $this->libelle,
             'promotion' => $this->promotion,
+            'categorie' => $this->categorie->libelle,
             'ref' => $this->ref,
             'marge' => $this->marge,
             'prix_de_vente' => $this->prix_de_vente,
